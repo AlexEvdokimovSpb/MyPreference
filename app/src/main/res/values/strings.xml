@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">MyPreference</string>
+    <string name="text_home">Home</string>
+    <string name="click_me">Click me</string>
+    <string name="menu_history">History</string>
+
+    // наполнение item_history - карточка
+    <string name="description">Description</string>
+    <string name="player_one">Player one</string>
+    <string name="points_one">Points one</string>
+    <string name="player_two">Player two</string>
+    <string name="points_two">Points two</string>
+    <string name="player_three">Player three</string>
+    <string name="points_three">Points three</string>
+    <string name="player_four">Player four</string>
+    <string name="points_four">Points four</string>
+
 </resources>
