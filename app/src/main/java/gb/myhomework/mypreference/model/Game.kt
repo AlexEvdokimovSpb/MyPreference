@@ -1,6 +1,6 @@
 package gb.myhomework.mypreference.model
 
-class Game(
+data class Game(
         val description: String,
         val playerOne: String,
         val playerTwo: String,

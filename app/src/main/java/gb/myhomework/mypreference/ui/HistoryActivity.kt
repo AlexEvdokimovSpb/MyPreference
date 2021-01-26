@@ -3,7 +3,6 @@ package gb.myhomework.mypreference.ui
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import gb.myhomework.mypreference.Constants
@@ -16,7 +15,6 @@ class HistoryActivity : AppCompatActivity() {
     lateinit var ui: ActivityHistoryBinding
     lateinit var historyViewModel: HistoryViewModel
     lateinit var adapter: HistoryAdapter
-    //lateinit var layoutManager: LinearLayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,15 +24,11 @@ class HistoryActivity : AppCompatActivity() {
         historyViewModel = ViewModelProvider(this).get(HistoryViewModel::class.java)
         adapter = HistoryAdapter()
         ui.historyRecyclerView.adapter = adapter
-//        layoutManager = LinearLayoutManager(this)
-//        if (Constants.DEBUG) {
-//            Log.v(TAG, "layoutManager =" + layoutManager)
-//        }
+        ui.historyRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        historyViewModel.viewState().observe(this, Observer<HistoryViewState> { state ->
+        historyViewModel.viewState().observe(this, { state ->
             state?.let { adapter.games = it.games }
-        }
-        )
+        })
 
         if (Constants.DEBUG) {
             Log.v(TAG, "HistoryActivity onCreate")
