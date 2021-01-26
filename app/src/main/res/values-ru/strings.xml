@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Преферанс</string>
+    <string name="click_me">Нажми меня</string>
+    <string name="menu_history" translatable="false">История игр</string>
+
+    // наполнение item_history
+    <string name="description">Описание</string>
+    <string name="player_one">Первый игрок</string>
+    <string name="points_one">Очки первого</string>
+    <string name="player_two">Второй игрок</string>
+    <string name="points_two">Очки второго</string>
+    <string name="player_three">Третий игрок</string>
+    <string name="points_three">Очки третьего</string>
+    <string name="player_four">Четвертый игрок</string>
+    <string name="points_four">Очки четвертого</string>
+    <string name="text_home">Начало</string>
+
+</resources>

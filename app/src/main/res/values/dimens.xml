@@ -1,0 +1,10 @@
+<resources>
+
+    <dimen name="margin2">2dp</dimen> // карточка, закругление
+    <dimen name="margin4">4dp</dimen> // карточка, отступ сверху и снизу
+    <dimen name="margin8">8dp</dimen> // карточка, отступы по бокам
+
+    <dimen name="text_history">30sp</dimen> // карточка, размер текста
+    <dimen name="text_main_activity">20sp</dimen>
+
+</resources>
