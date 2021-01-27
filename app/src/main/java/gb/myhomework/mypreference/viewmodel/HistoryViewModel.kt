@@ -8,14 +8,18 @@ import gb.myhomework.mypreference.Constants
 import gb.myhomework.mypreference.model.Repository
 import gb.myhomework.mypreference.ui.HistoryViewState
 
-class HistoryViewModel  : ViewModel() {
+class HistoryViewModel : ViewModel() {
     val TAG = "HW " + HistoryViewModel::class.java.simpleName
     private val viewStateLiveData: MutableLiveData<HistoryViewState> = MutableLiveData()
 
     init {
-        viewStateLiveData.value = HistoryViewState(Repository.getGames())
+        Repository.getGames().observeForever { games ->
+            viewStateLiveData.value =
+                viewStateLiveData.value?.copy(games = games) ?: HistoryViewState(games)
+        }
+
         if (Constants.DEBUG) {
-            Log.v(TAG, "HistoryViewModel init" )
+            Log.v(TAG, "HistoryViewModel init")
         }
     }
 
