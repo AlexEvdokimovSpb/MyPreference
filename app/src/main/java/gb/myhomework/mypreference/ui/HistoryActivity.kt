@@ -6,9 +6,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import gb.myhomework.mypreference.Constants
+import gb.myhomework.mypreference.R
 import gb.myhomework.mypreference.databinding.ActivityHistoryBinding
 import gb.myhomework.mypreference.model.Game
 import gb.myhomework.mypreference.viewmodel.HistoryViewModel
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HistoryActivity : AppCompatActivity() {
 
@@ -21,6 +24,9 @@ class HistoryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         ui = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(ui.root)
+
+        setSupportActionBar(ui.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         historyViewModel = ViewModelProvider(this).get(HistoryViewModel::class.java)
         adapter = HistoryAdapter(object : OnItemClickListener {

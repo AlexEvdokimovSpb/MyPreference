@@ -139,7 +139,7 @@ class GameHistoryActivity : AppCompatActivity() {
     )
 
     private fun triggerSaveGame() {
-        if (ui.textDescription == null || ui.textDescription!!.length() < 3) return
+        if (ui.textDescription.text == null || ui.textDescription.text!!.length < 3) return
 
         Handler(Looper.getMainLooper()).postDelayed(object : Runnable {
             override fun run() {
