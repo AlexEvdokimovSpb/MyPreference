@@ -80,40 +80,41 @@ class GameHistoryActivity : AppCompatActivity() {
     }
 
     private fun initView() {
-        if (game != null) {
-            ui.textDescription.setText(game?.description ?: "")
-            ui.textPlayerOne.setText(game?.playerOne ?: "")
-            ui.textPlayerTwo.setText(game?.playerTwo ?: "")
-            ui.textPlayerThree.setText(game?.playerThree ?: "")
-            ui.textPlayerFour.setText(game?.playerFour ?: "")
-            ui.textPointsPlayerOne.setText(game?.pointsOne ?: "")
-            ui.textPointsPlayerTwo.setText(game?.pointsTwo ?: "")
-            ui.textPointsPlayerThree.setText(game?.pointsThree ?: "")
-            ui.textPointsPlayerFour.setText(game?.pointsFour ?: "")
+        ui.textDescription.setText(game?.description ?: getString(R.string.description))
+        ui.textPlayerOne.setText(game?.playerOne ?: getString(R.string.player_one))
+        ui.textPlayerTwo.setText(game?.playerTwo ?: getString(R.string.player_two))
+        ui.textPlayerThree.setText(game?.playerThree ?: getString(R.string.player_three))
+        ui.textPlayerFour.setText(game?.playerFour ?: getString(R.string.player_four))
+        ui.textPointsPlayerOne.setText(game?.pointsOne ?: getString(R.string.points_one))
+        ui.textPointsPlayerTwo.setText(game?.pointsTwo ?: getString(R.string.points_two))
+        ui.textPointsPlayerThree.setText(game?.pointsThree ?: getString(R.string.points_three))
+        ui.textPointsPlayerFour.setText(game?.pointsFour ?: getString(R.string.points_four))
 
-            val color = when (game?.color) {
-                Game.Color.WHITE -> R.color.color_white
-                Game.Color.VIOLET -> R.color.color_violet
-                Game.Color.YELLOW -> R.color.color_yello
-                Game.Color.RED -> R.color.color_red
-                Game.Color.PINK -> R.color.color_pink
-                Game.Color.GREEN -> R.color.color_green
-                Game.Color.BLUE -> R.color.color_blue
-                else -> R.color.color_white
-            }
+        val color = when (game?.color) {
+            Game.Color.WHITE -> R.color.color_white
+            Game.Color.VIOLET -> R.color.color_violet
+            Game.Color.YELLOW -> R.color.color_yello
+            Game.Color.RED -> R.color.color_red
+            Game.Color.PINK -> R.color.color_pink
+            Game.Color.GREEN -> R.color.color_green
+            Game.Color.BLUE -> R.color.color_blue
+            else -> R.color.color_blue
+        }
 
-            ui.toolbar.setBackgroundColor(resources.getColor(color))
+        ui.toolbar.setBackgroundColor(resources.getColor(color))
 
-            ui.textDescription.addTextChangedListener(textChangeListener)
-            ui.textPlayerOne.addTextChangedListener(textChangeListener)
-            ui.textPlayerTwo.addTextChangedListener(textChangeListener)
-            ui.textPlayerThree.addTextChangedListener(textChangeListener)
-            ui.textPlayerFour.addTextChangedListener(textChangeListener)
-            ui.textPointsPlayerOne.addTextChangedListener(textChangeListener)
-            ui.textPointsPlayerTwo.addTextChangedListener(textChangeListener)
-            ui.textPointsPlayerThree.addTextChangedListener(textChangeListener)
-            ui.textPointsPlayerFour.addTextChangedListener(textChangeListener)
+        ui.textDescription.addTextChangedListener(textChangeListener)
+        ui.textPlayerOne.addTextChangedListener(textChangeListener)
+        ui.textPlayerTwo.addTextChangedListener(textChangeListener)
+        ui.textPlayerThree.addTextChangedListener(textChangeListener)
+        ui.textPlayerFour.addTextChangedListener(textChangeListener)
+        ui.textPointsPlayerOne.addTextChangedListener(textChangeListener)
+        ui.textPointsPlayerTwo.addTextChangedListener(textChangeListener)
+        ui.textPointsPlayerThree.addTextChangedListener(textChangeListener)
+        ui.textPointsPlayerFour.addTextChangedListener(textChangeListener)
 
+        if (Constants.DEBUG) {
+            Log.v(TAG, "initView $game ")
         }
     }
 
@@ -153,6 +154,7 @@ class GameHistoryActivity : AppCompatActivity() {
                     pointsTwo = ui.textPointsPlayerTwo.getText().toString(),
                     pointsThree = ui.textPointsPlayerThree.getText().toString(),
                     pointsFour = ui.textPointsPlayerFour.getText().toString(),
+                    color = Game.Color.BLUE,
                     lastChanged = Date()
                 ) ?: createNewGame()
 
