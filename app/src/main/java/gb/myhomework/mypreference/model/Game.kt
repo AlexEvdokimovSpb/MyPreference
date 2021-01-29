@@ -1,22 +1,21 @@
 package gb.myhomework.mypreference.model
 
 import android.os.Parcelable
-import android.widget.EditText
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 
 @Parcelize
 data class Game(
-    val id: String = UUID.randomUUID().toString(),
-    val description: String,
-    val playerOne: String,
-    val playerTwo: String,
-    val playerThree: String,
-    val playerFour: String,
-    val pointsOne: String,
-    val pointsTwo: String,
-    val pointsThree: String,
-    val pointsFour: String,
+    val id: String = "",
+    val description: String = "",
+    val playerOne: String = "",
+    val playerTwo: String = "",
+    val playerThree: String = "",
+    val playerFour: String = "",
+    val pointsOne: String = "",
+    val pointsTwo: String = "",
+    val pointsThree: String = "",
+    val pointsFour: String = "",
     val color: Color = Color.WHITE,
     val lastChanged: Date = Date()
 ) : Parcelable {

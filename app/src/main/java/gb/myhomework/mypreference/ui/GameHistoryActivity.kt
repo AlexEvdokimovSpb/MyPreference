@@ -2,7 +2,6 @@ package gb.myhomework.mypreference.ui
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,33 +11,35 @@ import android.util.Log
 import android.view.MenuItem
 import androidx.lifecycle.ViewModelProvider
 import gb.myhomework.mypreference.Constants
-import gb.myhomework.mypreference.Constants.DATE_TIME_FORMAT
 import gb.myhomework.mypreference.R
 import gb.myhomework.mypreference.databinding.ActivityGameHistoryBinding
 import gb.myhomework.mypreference.model.Game
 import gb.myhomework.mypreference.viewmodel.GameHistoryViewModel
-import java.text.SimpleDateFormat
 import java.util.*
 
 private const val SAVE_DELAY = 2000L
 
-class GameHistoryActivity : AppCompatActivity() {
+class GameHistoryActivity : BaseActivity<Game?, GameHistoryViewState>() {
 
     val TAG = "HW " + GameHistoryActivity::class.java.simpleName
 
     companion object {
         private val EXTRA_GAME = "GameHistoryActivity.extra.GAME"
 
-        fun getStartIntent(context: Context, game: Game?): Intent {
+        fun getStartIntent(context: Context, gameId: String?): Intent {
             val intent = Intent(context, GameHistoryActivity::class.java)
-            intent.putExtra(EXTRA_GAME, game)
+            intent.putExtra(EXTRA_GAME, gameId)
             return intent
         }
     }
 
+    override val viewModel: GameHistoryViewModel by lazy {
+        ViewModelProvider(this).get(
+            GameHistoryViewModel::class.java
+        )
+    }
     private var game: Game? = null
-    lateinit var ui: ActivityGameHistoryBinding
-    private lateinit var viewModel: GameHistoryViewModel
+    override lateinit var ui: ActivityGameHistoryBinding
 
     private val textChangeListener = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
@@ -54,29 +55,36 @@ class GameHistoryActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ui = ActivityGameHistoryBinding.inflate(layoutInflater)
         setContentView(ui.root)
 
-        viewModel = ViewModelProvider(this).get(GameHistoryViewModel::class.java)
+        val gameId = intent.getStringExtra(EXTRA_GAME)
 
-        game = intent.getParcelableExtra(EXTRA_GAME)
         setSupportActionBar(ui.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        supportActionBar?.title = if (game != null) {
-            SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault()).format(game!!.lastChanged)
-        } else {
-            getString(R.string.new_game)
+        gameId?.let {
+            viewModel.loadGame(it)
         }
+
+        if (gameId == null) supportActionBar?.title = getString(R.string.new_game)
+
 
         if (Constants.DEBUG) {
             Log.v(TAG, "onCreate")
         }
 
-        initView()
+        ui.textDescription.addTextChangedListener(textChangeListener)
+        ui.textPlayerOne.addTextChangedListener(textChangeListener)
+        ui.textPlayerTwo.addTextChangedListener(textChangeListener)
+        ui.textPlayerThree.addTextChangedListener(textChangeListener)
+        ui.textPlayerFour.addTextChangedListener(textChangeListener)
+        ui.textPointsPlayerOne.addTextChangedListener(textChangeListener)
+        ui.textPointsPlayerTwo.addTextChangedListener(textChangeListener)
+        ui.textPointsPlayerThree.addTextChangedListener(textChangeListener)
+        ui.textPointsPlayerFour.addTextChangedListener(textChangeListener)
     }
 
     private fun initView() {
@@ -102,16 +110,6 @@ class GameHistoryActivity : AppCompatActivity() {
         }
 
         ui.toolbar.setBackgroundColor(resources.getColor(color))
-
-        ui.textDescription.addTextChangedListener(textChangeListener)
-        ui.textPlayerOne.addTextChangedListener(textChangeListener)
-        ui.textPlayerTwo.addTextChangedListener(textChangeListener)
-        ui.textPlayerThree.addTextChangedListener(textChangeListener)
-        ui.textPlayerFour.addTextChangedListener(textChangeListener)
-        ui.textPointsPlayerOne.addTextChangedListener(textChangeListener)
-        ui.textPointsPlayerTwo.addTextChangedListener(textChangeListener)
-        ui.textPointsPlayerThree.addTextChangedListener(textChangeListener)
-        ui.textPointsPlayerFour.addTextChangedListener(textChangeListener)
 
         if (Constants.DEBUG) {
             Log.v(TAG, "initView $game ")
@@ -166,5 +164,11 @@ class GameHistoryActivity : AppCompatActivity() {
                 }
             }
         }, SAVE_DELAY)
+    }
+
+    override fun renderData(data: Game?) {
+        this.game = data
+        initView()
+
     }
 }
