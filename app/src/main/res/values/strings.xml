@@ -16,4 +16,13 @@
     <string name="points_four">Points four</string>
 
     <string name="new_game">New game</string>
+    <string name="snackbar_action">Error</string>
+
+    <string name="logout_dialog_title">Log out of your account?</string>
+    <string name="logout_dialog_message">"All your notes will be saved. You will be able to access
+        them after logging in "</string>
+    <string name="logout_dialog_cancel">Cancel</string>
+    <string name="ok_bth_title" translatable="false">OK</string>
+    <string name="logout_menu_title">Logout</string>
+
 </resources>
