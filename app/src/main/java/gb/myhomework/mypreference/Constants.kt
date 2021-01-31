@@ -1,6 +1,7 @@
 package gb.myhomework.mypreference
 
 object Constants {
-    var VERBOSE = false
-    var DEBUG = VERBOSE && true
+    val VERBOSE = true
+    val DEBUG = VERBOSE && true
+    const val DATE_TIME_FORMAT = "dd.MMM.yy HH:mm"
 }

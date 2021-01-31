@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ui= ActivityMainBinding.inflate(layoutInflater)
+        ui = ActivityMainBinding.inflate(layoutInflater)
         setContentView(ui.root)
 
         ui.button.setOnClickListener {
@@ -25,5 +25,4 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 }
