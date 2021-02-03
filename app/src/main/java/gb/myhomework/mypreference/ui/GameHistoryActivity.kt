@@ -8,7 +8,9 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import gb.myhomework.mypreference.Constants
 import gb.myhomework.mypreference.R
@@ -16,12 +18,12 @@ import gb.myhomework.mypreference.databinding.ActivityGameHistoryBinding
 import gb.myhomework.mypreference.databinding.ActivityHistoryBinding
 import gb.myhomework.mypreference.model.Game
 import gb.myhomework.mypreference.viewmodel.GameHistoryViewModel
-import kotlinx.android.synthetic.main.item_history.*
+//import kotlinx.android.synthetic.main.item_history.*
 import java.util.*
 
 private const val SAVE_DELAY = 2000L
 
-class GameHistoryActivity : BaseActivity<Game?, GameHistoryViewState>() {
+class GameHistoryActivity : BaseActivity<GameHistoryViewState.Data, GameHistoryViewState>() {
 
     val TAG = "HW " + GameHistoryActivity::class.java.simpleName
 
@@ -40,8 +42,11 @@ class GameHistoryActivity : BaseActivity<Game?, GameHistoryViewState>() {
             GameHistoryViewModel::class.java
         )
     }
+
     private var game: Game? = null
-    override val ui: ActivityGameHistoryBinding  by lazy {
+    private var color: Game.Color = Game.Color.GREEN
+
+    override val ui: ActivityGameHistoryBinding by lazy {
         ActivityGameHistoryBinding.inflate(layoutInflater)
     }
 
@@ -90,8 +95,10 @@ class GameHistoryActivity : BaseActivity<Game?, GameHistoryViewState>() {
 
     private fun initView() {
         game?.run {
+            supportActionBar?.title = lastChanged.format()
             ui.toolbar.setBackgroundColor(color.getColorInt(this@GameHistoryActivity))
 
+            removeEditListener()
             ui.textDescription.setText(description)
             ui.textPlayerOne.setText(playerOne)
             ui.textPlayerTwo.setText(playerTwo)
@@ -101,20 +108,31 @@ class GameHistoryActivity : BaseActivity<Game?, GameHistoryViewState>() {
             ui.textPointsPlayerTwo.setText(pointsTwo)
             ui.textPointsPlayerThree.setText(pointsThree)
             ui.textPointsPlayerFour.setText(pointsFour)
+            setEditListener()
 
-            supportActionBar?.title = lastChanged.format()
         }
+
         if (Constants.DEBUG) {
             Log.v(TAG, "initView $game ")
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean =
+        menuInflater.inflate(R.menu.menu_game, menu).let { true }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        android.R.id.home -> {
-            onBackPressed()
-            true
-        }
+        android.R.id.home -> onBackPressed().let { true }
+        //R.id.palette -> togglePalette().let { true }
+        R.id.delete -> deleteGame().let { true }
         else -> super.onOptionsItemSelected(item)
+    }
+
+    private fun deleteGame() {
+        AlertDialog.Builder(this)
+            .setMessage(R.string.delete_dialog_message)
+            .setNegativeButton(R.string.cancel_btn_title) { dialog, _ -> dialog.dismiss() }
+            .setPositiveButton(R.string.ok_bth_title) { _, _ -> viewModel.deleteGame() }
+            .show()
     }
 
     private fun createNewGame(): Game = Game(
@@ -159,9 +177,34 @@ class GameHistoryActivity : BaseActivity<Game?, GameHistoryViewState>() {
         }, SAVE_DELAY)
     }
 
-    override fun renderData(data: Game?) {
-        this.game = data
+    override fun renderData(data: GameHistoryViewState.Data) {
+        if (data.isDeleted) finish()
+        this.game = data.game
+        data.game?.let { color = it.color }
         initView()
+    }
 
+    private fun setEditListener() {
+        ui.textDescription.addTextChangedListener(textChangeListener)
+        ui.textPlayerOne.addTextChangedListener(textChangeListener)
+        ui.textPlayerTwo.addTextChangedListener(textChangeListener)
+        ui.textPlayerThree.addTextChangedListener(textChangeListener)
+        ui.textPlayerFour.addTextChangedListener(textChangeListener)
+        ui.textPointsPlayerOne.addTextChangedListener(textChangeListener)
+        ui.textPointsPlayerTwo.addTextChangedListener(textChangeListener)
+        ui.textPointsPlayerThree.addTextChangedListener(textChangeListener)
+        ui.textPointsPlayerFour.addTextChangedListener(textChangeListener)
+    }
+
+    private fun removeEditListener() {
+        ui.textDescription.removeTextChangedListener(textChangeListener)
+        ui.textPlayerOne.removeTextChangedListener(textChangeListener)
+        ui.textPlayerTwo.removeTextChangedListener(textChangeListener)
+        ui.textPlayerThree.removeTextChangedListener(textChangeListener)
+        ui.textPlayerFour.removeTextChangedListener(textChangeListener)
+        ui.textPointsPlayerOne.removeTextChangedListener(textChangeListener)
+        ui.textPointsPlayerTwo.removeTextChangedListener(textChangeListener)
+        ui.textPointsPlayerThree.removeTextChangedListener(textChangeListener)
+        ui.textPointsPlayerFour.removeTextChangedListener(textChangeListener)
     }
 }

@@ -1,38 +1,50 @@
 package gb.myhomework.mypreference.viewmodel
 
-import androidx.lifecycle.Observer
 import gb.myhomework.mypreference.model.Game
 import gb.myhomework.mypreference.model.HistoryGameResult
 import gb.myhomework.mypreference.model.Repository
 import gb.myhomework.mypreference.ui.GameHistoryViewState
 
 class GameHistoryViewModel(val repository: Repository = Repository) :
-    BaseViewModel<Game?, GameHistoryViewState>() {
+    BaseViewModel<GameHistoryViewState.Data, GameHistoryViewState>() {
 
-    private var pendingGame: Game? = null
+    private val currentGame: Game?
+        get() = viewStateLiveData.value?.data?.game
 
     fun saveChanges(game: Game) {
-        pendingGame = game
+        viewStateLiveData.value = GameHistoryViewState((GameHistoryViewState.Data(game = game)))
     }
 
     override fun onCleared() {
-        if (pendingGame != null) {
-            repository.saveGame(pendingGame!!)
-        }
+        currentGame?.let { repository.saveGame(it) }
     }
 
     fun loadGame(gameId: String) {
-        repository.getGameById(gameId).observeForever(object : Observer<HistoryGameResult> {
-            override fun onChanged(t: HistoryGameResult?) {
-                if (t == null) return
-
-                when (t) {
+        repository.getGameById(gameId).observeForever { result ->
+            result?.let { gameResult ->
+                viewStateLiveData.value = when (gameResult) {
                     is HistoryGameResult.Success<*> ->
-                        viewStateLiveData.value = GameHistoryViewState(game = t.data as? Game)
+                        GameHistoryViewState(GameHistoryViewState.Data(game = gameResult.data as? Game))
                     is HistoryGameResult.Error ->
-                        viewStateLiveData.value = GameHistoryViewState(error = t.error)
+                        GameHistoryViewState(error = gameResult.error)
                 }
             }
-        })
+        }
     }
+
+    fun deleteGame() {
+        currentGame?.let {
+            repository.deleteGame(it.id).observeForever { result ->
+                result?.let { gameResult ->
+                    viewStateLiveData.value = when (gameResult) {
+                        is HistoryGameResult.Success<*> -> GameHistoryViewState(
+                            GameHistoryViewState.Data(isDeleted = true))
+                        is HistoryGameResult.Error -> GameHistoryViewState(error = gameResult.error)
+                    }
+                }
+            }
+        }
+    }
+
 }
+

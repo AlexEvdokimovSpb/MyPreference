@@ -24,7 +24,7 @@ class FireStoreProvider : RemoteDataProvider {
     override fun subscribeToAllGames(): LiveData<HistoryGameResult> =
         MutableLiveData<HistoryGameResult>().apply {
             try {
-                getUserNotesCollection().addSnapshotListener { snapshot, error ->
+                getUserGamesCollection().addSnapshotListener { snapshot, error ->
                     value = error?.let { HistoryGameResult.Error(it) }
                         ?: snapshot?.let { query ->
                             val games = query.documents.map { document ->
@@ -41,7 +41,7 @@ class FireStoreProvider : RemoteDataProvider {
     override fun getGameById(id: String): LiveData<HistoryGameResult> =
         MutableLiveData<HistoryGameResult>().apply {
             try {
-                getUserNotesCollection().document(id)
+                getUserGamesCollection().document(id)
                     .get()
                     .addOnSuccessListener { snapshot ->
                         value =
@@ -57,7 +57,7 @@ class FireStoreProvider : RemoteDataProvider {
     override fun saveGame(game: Game): LiveData<HistoryGameResult> =
         MutableLiveData<HistoryGameResult>().apply {
             try {
-                getUserNotesCollection().document(game.id)
+                getUserGamesCollection().document(game.id)
                     .set(game)
                     .addOnSuccessListener {
                         Log.d(TAG, "Game $game is saved")
@@ -73,7 +73,7 @@ class FireStoreProvider : RemoteDataProvider {
             }
         }
 
-    private fun getUserNotesCollection() = currentUser?.let {
+    private fun getUserGamesCollection() = currentUser?.let {
         db.collection(USERS_COLLECTION)
             .document(it.uid)
             .collection(GAMES_COLLECTION)
@@ -92,5 +92,20 @@ class FireStoreProvider : RemoteDataProvider {
     companion object {
         private val TAG = "HW ${FireStoreProvider::class.java.simpleName} :"
     }
+
+    override fun deleteGame(gameId: String): LiveData<HistoryGameResult> =
+        MutableLiveData<HistoryGameResult>().apply {
+            try {
+                getUserGamesCollection().document(gameId).delete()
+                    .addOnSuccessListener {
+                        value = HistoryGameResult.Success(null)
+                    }.addOnFailureListener {
+                        throw it
+                    }
+            } catch (e: Throwable) {
+                value = HistoryGameResult.Error(e)
+            }
+        }
+
 
 }
