@@ -16,7 +16,7 @@ data class Game(
     val pointsTwo: String = "",
     val pointsThree: String = "",
     val pointsFour: String = "",
-    val color: Color = Color.WHITE,
+    val color: Color = Color.GREEN,
     val lastChanged: Date = Date()
 ) : Parcelable {
     override fun equals(other: Any?): Boolean {

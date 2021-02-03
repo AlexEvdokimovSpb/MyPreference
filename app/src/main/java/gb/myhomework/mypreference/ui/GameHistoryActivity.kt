@@ -10,15 +10,15 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import gb.myhomework.mypreference.Constants
 import gb.myhomework.mypreference.R
 import gb.myhomework.mypreference.databinding.ActivityGameHistoryBinding
-import gb.myhomework.mypreference.databinding.ActivityHistoryBinding
 import gb.myhomework.mypreference.model.Game
+import gb.myhomework.mypreference.model.Game.Color
 import gb.myhomework.mypreference.viewmodel.GameHistoryViewModel
-//import kotlinx.android.synthetic.main.item_history.*
 import java.util.*
 
 private const val SAVE_DELAY = 2000L
@@ -91,6 +91,12 @@ class GameHistoryActivity : BaseActivity<GameHistoryViewState.Data, GameHistoryV
         ui.textPointsPlayerTwo.addTextChangedListener(textChangeListener)
         ui.textPointsPlayerThree.addTextChangedListener(textChangeListener)
         ui.textPointsPlayerFour.addTextChangedListener(textChangeListener)
+
+        ui.colorPicker.onColorClickListener = {
+            color = it
+            setToolbarColor(it)
+            triggerSaveGame()
+        }
     }
 
     private fun initView() {
@@ -99,21 +105,26 @@ class GameHistoryActivity : BaseActivity<GameHistoryViewState.Data, GameHistoryV
             ui.toolbar.setBackgroundColor(color.getColorInt(this@GameHistoryActivity))
 
             removeEditListener()
-            ui.textDescription.setText(description)
-            ui.textPlayerOne.setText(playerOne)
-            ui.textPlayerTwo.setText(playerTwo)
-            ui.textPlayerThree.setText(playerThree)
-            ui.textPlayerFour.setText(playerFour)
-            ui.textPointsPlayerOne.setText(pointsOne)
-            ui.textPointsPlayerTwo.setText(pointsTwo)
-            ui.textPointsPlayerThree.setText(pointsThree)
-            ui.textPointsPlayerFour.setText(pointsFour)
+            checkingForChanges(description, ui.textDescription)
+            checkingForChanges(playerOne, ui.textPlayerOne)
+            checkingForChanges(playerTwo, ui.textPlayerTwo)
+            checkingForChanges(playerThree, ui.textPlayerThree)
+            checkingForChanges(playerFour, ui.textPlayerFour)
+            checkingForChanges(pointsOne, ui.textPointsPlayerOne)
+            checkingForChanges(pointsTwo, ui.textPointsPlayerTwo)
+            checkingForChanges(pointsThree, ui.textPointsPlayerThree)
+            checkingForChanges(pointsFour, ui.textPointsPlayerFour)
             setEditListener()
-
         }
 
         if (Constants.DEBUG) {
             Log.v(TAG, "initView $game ")
+        }
+    }
+
+    private fun checkingForChanges(text: String, field: EditText) {
+        if (text != field.toString()) {
+            field.setText(text)
         }
     }
 
@@ -122,10 +133,27 @@ class GameHistoryActivity : BaseActivity<GameHistoryViewState.Data, GameHistoryV
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         android.R.id.home -> onBackPressed().let { true }
-        //R.id.palette -> togglePalette().let { true }
+        R.id.palette -> togglePalette().let { true }
         R.id.delete -> deleteGame().let { true }
         else -> super.onOptionsItemSelected(item)
     }
+
+    private fun togglePalette() {
+        if (ui.colorPicker.isOpen) {
+            ui.colorPicker.close()
+        } else {
+            ui.colorPicker.open()
+        }
+    }
+
+    override fun onBackPressed() {
+        if (ui.colorPicker.isOpen) {
+            ui.colorPicker.close()
+            return
+        }
+        super.onBackPressed()
+    }
+
 
     private fun deleteGame() {
         AlertDialog.Builder(this)
@@ -163,9 +191,10 @@ class GameHistoryActivity : BaseActivity<GameHistoryViewState.Data, GameHistoryV
                     pointsTwo = ui.textPointsPlayerTwo.getText().toString(),
                     pointsThree = ui.textPointsPlayerThree.getText().toString(),
                     pointsFour = ui.textPointsPlayerFour.getText().toString(),
-                    color = Game.Color.BLUE,
-                    lastChanged = Date()
-                ) ?: createNewGame()
+                    color = color,
+                    lastChanged = Date(),
+
+                    ) ?: createNewGame()
 
                 if (game != null) {
                     viewModel.saveChanges(game!!)
@@ -176,6 +205,11 @@ class GameHistoryActivity : BaseActivity<GameHistoryViewState.Data, GameHistoryV
             }
         }, SAVE_DELAY)
     }
+
+    private fun setToolbarColor(color: Color) {
+        ui.toolbar.setBackgroundColor(color.getColorInt(this))
+    }
+
 
     override fun renderData(data: GameHistoryViewState.Data) {
         if (data.isDeleted) finish()
