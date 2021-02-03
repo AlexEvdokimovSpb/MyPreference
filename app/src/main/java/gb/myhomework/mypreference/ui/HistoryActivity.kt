@@ -3,20 +3,18 @@ package gb.myhomework.mypreference.ui
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import gb.myhomework.mypreference.Constants
 import gb.myhomework.mypreference.databinding.ActivityHistoryBinding
 import gb.myhomework.mypreference.model.Game
 import gb.myhomework.mypreference.viewmodel.HistoryViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class HistoryActivity : BaseActivity<List<Game>?, HistoryViewState>() {
 
     val TAG = "HW " + HistoryActivity::class.java.simpleName
 
-    override val viewModel: HistoryViewModel by lazy {
-        ViewModelProvider(this).get(HistoryViewModel::class.java)
-    }
+    override val viewModel: HistoryViewModel by viewModel()
     private lateinit var adapter: HistoryAdapter
     override val ui: ActivityHistoryBinding by lazy {
         ActivityHistoryBinding.inflate(layoutInflater)

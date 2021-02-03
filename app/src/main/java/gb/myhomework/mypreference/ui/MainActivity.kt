@@ -54,7 +54,6 @@ class MainActivity : AppCompatActivity(), LogoutDialog.LogoutListener {
             .addOnCompleteListener {
                 startActivity(Intent(this, SplashActivity::class.java))
                 finish()
-
             }
     }
 

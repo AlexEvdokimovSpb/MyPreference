@@ -14,12 +14,13 @@ import gb.myhomework.mypreference.model.User
 private const val GAMES_COLLECTION = "games"
 private const val USERS_COLLECTION = "users"
 
-class FireStoreProvider : RemoteDataProvider {
+class FireStoreProvider(
+    private val firebaseAuth: FirebaseAuth,
+    private val db: FirebaseFirestore
+) : RemoteDataProvider {
 
-    private var db = FirebaseFirestore.getInstance()
     private val currentUser
-        get() = FirebaseAuth.getInstance().currentUser
-
+        get() = firebaseAuth.currentUser
 
     override fun subscribeToAllGames(): LiveData<HistoryGameResult> =
         MutableLiveData<HistoryGameResult>().apply {
@@ -106,6 +107,4 @@ class FireStoreProvider : RemoteDataProvider {
                 value = HistoryGameResult.Error(e)
             }
         }
-
-
 }

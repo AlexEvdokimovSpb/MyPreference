@@ -71,7 +71,6 @@ class ColorPickerView : LinearLayout {
                     setOnClickListener { onColorClickListener(it.tag as Color) }
                 })
         }
-
     }
 
     override fun onAttachedToWindow() {

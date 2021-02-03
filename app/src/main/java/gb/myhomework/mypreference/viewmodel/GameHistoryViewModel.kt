@@ -5,7 +5,7 @@ import gb.myhomework.mypreference.model.HistoryGameResult
 import gb.myhomework.mypreference.model.Repository
 import gb.myhomework.mypreference.ui.GameHistoryViewState
 
-class GameHistoryViewModel(val repository: Repository = Repository) :
+class GameHistoryViewModel(val repository: Repository) :
     BaseViewModel<GameHistoryViewState.Data, GameHistoryViewState>() {
 
     private val currentGame: Game?

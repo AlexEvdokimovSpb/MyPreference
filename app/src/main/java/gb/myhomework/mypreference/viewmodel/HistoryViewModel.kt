@@ -8,7 +8,7 @@ import gb.myhomework.mypreference.model.HistoryGameResult
 import gb.myhomework.mypreference.model.Repository
 import gb.myhomework.mypreference.ui.HistoryViewState
 
-class HistoryViewModel(val repository: Repository = Repository) :
+class HistoryViewModel(val repository: Repository) :
     BaseViewModel<List<Game>?, HistoryViewState>() {
     val TAG = "HW " + HistoryViewModel::class.java.simpleName
 

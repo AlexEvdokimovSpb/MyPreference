@@ -12,13 +12,13 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.ViewModelProvider
 import gb.myhomework.mypreference.Constants
 import gb.myhomework.mypreference.R
 import gb.myhomework.mypreference.databinding.ActivityGameHistoryBinding
 import gb.myhomework.mypreference.model.Game
 import gb.myhomework.mypreference.model.Game.Color
 import gb.myhomework.mypreference.viewmodel.GameHistoryViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 import java.util.*
 
 private const val SAVE_DELAY = 2000L
@@ -37,11 +37,7 @@ class GameHistoryActivity : BaseActivity<GameHistoryViewState.Data, GameHistoryV
         }
     }
 
-    override val viewModel: GameHistoryViewModel by lazy {
-        ViewModelProvider(this).get(
-            GameHistoryViewModel::class.java
-        )
-    }
+    override val viewModel: GameHistoryViewModel by viewModel()
 
     private var game: Game? = null
     private var color: Game.Color = Game.Color.GREEN
@@ -102,7 +98,7 @@ class GameHistoryActivity : BaseActivity<GameHistoryViewState.Data, GameHistoryV
     private fun initView() {
         game?.run {
             supportActionBar?.title = lastChanged.format()
-            ui.toolbar.setBackgroundColor(color.getColorInt(this@GameHistoryActivity))
+            setToolbarColor(color)
 
             removeEditListener()
             checkingForChanges(description, ui.textDescription)
@@ -153,7 +149,6 @@ class GameHistoryActivity : BaseActivity<GameHistoryViewState.Data, GameHistoryV
         }
         super.onBackPressed()
     }
-
 
     private fun deleteGame() {
         AlertDialog.Builder(this)
@@ -209,7 +204,6 @@ class GameHistoryActivity : BaseActivity<GameHistoryViewState.Data, GameHistoryV
     private fun setToolbarColor(color: Color) {
         ui.toolbar.setBackgroundColor(color.getColorInt(this))
     }
-
 
     override fun renderData(data: GameHistoryViewState.Data) {
         if (data.isDeleted) finish()
