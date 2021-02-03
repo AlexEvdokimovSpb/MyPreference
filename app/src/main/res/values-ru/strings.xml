@@ -28,4 +28,8 @@
     <string name="delete_dialog_message">Удалить?</string>
     <string name="cancel_btn_title">Отмена</string>
 
+    <string name="setting">Настройки</string>
+    <string name="history">История</string>
+    <string name="reserved">Зарезервировано</string>
+
 </resources>

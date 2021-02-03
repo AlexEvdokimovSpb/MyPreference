@@ -29,4 +29,14 @@
     <string name="delete_dialog_message">Delete?</string>
     <string name="cancel_btn_title">Cancel</string>
 
+    <!-- Navigation -->
+    <string name="setting">Setting</string>
+    <string name="history">History</string>
+    <string name="reserved">Reserved</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
+    <string name="nav_header_desc" translatable="false">Navigation header</string>
+    <string name="nav_header_title" translatable="false">AlexSPb</string>
+    <string name="nav_header_subtitle" translatable="false">3416216@gmail.com</string>
+
 </resources>
