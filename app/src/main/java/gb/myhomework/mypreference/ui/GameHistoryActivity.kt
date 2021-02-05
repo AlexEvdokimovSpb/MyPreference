@@ -2,6 +2,7 @@ package gb.myhomework.mypreference.ui
 
 import android.content.Context
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,35 +12,33 @@ import android.util.Log
 import android.view.MenuItem
 import androidx.lifecycle.ViewModelProvider
 import gb.myhomework.mypreference.Constants
+import gb.myhomework.mypreference.Constants.DATE_TIME_FORMAT
 import gb.myhomework.mypreference.R
 import gb.myhomework.mypreference.databinding.ActivityGameHistoryBinding
 import gb.myhomework.mypreference.model.Game
 import gb.myhomework.mypreference.viewmodel.GameHistoryViewModel
+import java.text.SimpleDateFormat
 import java.util.*
 
 private const val SAVE_DELAY = 2000L
 
-class GameHistoryActivity : BaseActivity<Game?, GameHistoryViewState>() {
+class GameHistoryActivity : AppCompatActivity() {
 
     val TAG = "HW " + GameHistoryActivity::class.java.simpleName
 
     companion object {
         private val EXTRA_GAME = "GameHistoryActivity.extra.GAME"
 
-        fun getStartIntent(context: Context, gameId: String?): Intent {
+        fun getStartIntent(context: Context, game: Game?): Intent {
             val intent = Intent(context, GameHistoryActivity::class.java)
-            intent.putExtra(EXTRA_GAME, gameId)
+            intent.putExtra(EXTRA_GAME, game)
             return intent
         }
     }
 
-    override val viewModel: GameHistoryViewModel by lazy {
-        ViewModelProvider(this).get(
-            GameHistoryViewModel::class.java
-        )
-    }
     private var game: Game? = null
-    override lateinit var ui: ActivityGameHistoryBinding
+    lateinit var ui: ActivityGameHistoryBinding
+    private lateinit var viewModel: GameHistoryViewModel
 
     private val textChangeListener = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
@@ -55,64 +54,66 @@ class GameHistoryActivity : BaseActivity<Game?, GameHistoryViewState>() {
         }
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ui = ActivityGameHistoryBinding.inflate(layoutInflater)
         setContentView(ui.root)
 
-        val gameId = intent.getStringExtra(EXTRA_GAME)
+        viewModel = ViewModelProvider(this).get(GameHistoryViewModel::class.java)
 
+        game = intent.getParcelableExtra(EXTRA_GAME)
         setSupportActionBar(ui.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        gameId?.let {
-            viewModel.loadGame(it)
+        supportActionBar?.title = if (game != null) {
+            SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault()).format(game!!.lastChanged)
+        } else {
+            getString(R.string.new_game)
         }
-
-        if (gameId == null) supportActionBar?.title = getString(R.string.new_game)
-
 
         if (Constants.DEBUG) {
             Log.v(TAG, "onCreate")
         }
 
-        ui.textDescription.addTextChangedListener(textChangeListener)
-        ui.textPlayerOne.addTextChangedListener(textChangeListener)
-        ui.textPlayerTwo.addTextChangedListener(textChangeListener)
-        ui.textPlayerThree.addTextChangedListener(textChangeListener)
-        ui.textPlayerFour.addTextChangedListener(textChangeListener)
-        ui.textPointsPlayerOne.addTextChangedListener(textChangeListener)
-        ui.textPointsPlayerTwo.addTextChangedListener(textChangeListener)
-        ui.textPointsPlayerThree.addTextChangedListener(textChangeListener)
-        ui.textPointsPlayerFour.addTextChangedListener(textChangeListener)
+        initView()
     }
 
     private fun initView() {
-        ui.textDescription.setText(game?.description ?: getString(R.string.description))
-        ui.textPlayerOne.setText(game?.playerOne ?: getString(R.string.player_one))
-        ui.textPlayerTwo.setText(game?.playerTwo ?: getString(R.string.player_two))
-        ui.textPlayerThree.setText(game?.playerThree ?: getString(R.string.player_three))
-        ui.textPlayerFour.setText(game?.playerFour ?: getString(R.string.player_four))
-        ui.textPointsPlayerOne.setText(game?.pointsOne ?: getString(R.string.points_one))
-        ui.textPointsPlayerTwo.setText(game?.pointsTwo ?: getString(R.string.points_two))
-        ui.textPointsPlayerThree.setText(game?.pointsThree ?: getString(R.string.points_three))
-        ui.textPointsPlayerFour.setText(game?.pointsFour ?: getString(R.string.points_four))
+        if (game != null) {
+            ui.textDescription.setText(game?.description ?: "")
+            ui.textPlayerOne.setText(game?.playerOne ?: "")
+            ui.textPlayerTwo.setText(game?.playerTwo ?: "")
+            ui.textPlayerThree.setText(game?.playerThree ?: "")
+            ui.textPlayerFour.setText(game?.playerFour ?: "")
+            ui.textPointsPlayerOne.setText(game?.pointsOne ?: "")
+            ui.textPointsPlayerTwo.setText(game?.pointsTwo ?: "")
+            ui.textPointsPlayerThree.setText(game?.pointsThree ?: "")
+            ui.textPointsPlayerFour.setText(game?.pointsFour ?: "")
 
-        val color = when (game?.color) {
-            Game.Color.WHITE -> R.color.color_white
-            Game.Color.VIOLET -> R.color.color_violet
-            Game.Color.YELLOW -> R.color.color_yello
-            Game.Color.RED -> R.color.color_red
-            Game.Color.PINK -> R.color.color_pink
-            Game.Color.GREEN -> R.color.color_green
-            Game.Color.BLUE -> R.color.color_blue
-            else -> R.color.color_blue
-        }
+            val color = when (game?.color) {
+                Game.Color.WHITE -> R.color.color_white
+                Game.Color.VIOLET -> R.color.color_violet
+                Game.Color.YELLOW -> R.color.color_yello
+                Game.Color.RED -> R.color.color_red
+                Game.Color.PINK -> R.color.color_pink
+                Game.Color.GREEN -> R.color.color_green
+                Game.Color.BLUE -> R.color.color_blue
+                else -> R.color.color_white
+            }
 
-        ui.toolbar.setBackgroundColor(resources.getColor(color))
+            ui.toolbar.setBackgroundColor(resources.getColor(color))
 
-        if (Constants.DEBUG) {
-            Log.v(TAG, "initView $game ")
+            ui.textDescription.addTextChangedListener(textChangeListener)
+            ui.textPlayerOne.addTextChangedListener(textChangeListener)
+            ui.textPlayerTwo.addTextChangedListener(textChangeListener)
+            ui.textPlayerThree.addTextChangedListener(textChangeListener)
+            ui.textPlayerFour.addTextChangedListener(textChangeListener)
+            ui.textPointsPlayerOne.addTextChangedListener(textChangeListener)
+            ui.textPointsPlayerTwo.addTextChangedListener(textChangeListener)
+            ui.textPointsPlayerThree.addTextChangedListener(textChangeListener)
+            ui.textPointsPlayerFour.addTextChangedListener(textChangeListener)
+
         }
     }
 
@@ -152,7 +153,6 @@ class GameHistoryActivity : BaseActivity<Game?, GameHistoryViewState>() {
                     pointsTwo = ui.textPointsPlayerTwo.getText().toString(),
                     pointsThree = ui.textPointsPlayerThree.getText().toString(),
                     pointsFour = ui.textPointsPlayerFour.getText().toString(),
-                    color = Game.Color.BLUE,
                     lastChanged = Date()
                 ) ?: createNewGame()
 
@@ -164,11 +164,5 @@ class GameHistoryActivity : BaseActivity<Game?, GameHistoryViewState>() {
                 }
             }
         }, SAVE_DELAY)
-    }
-
-    override fun renderData(data: Game?) {
-        this.game = data
-        initView()
-
     }
 }
