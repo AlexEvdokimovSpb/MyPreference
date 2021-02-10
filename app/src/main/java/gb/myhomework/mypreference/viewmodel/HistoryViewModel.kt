@@ -1,6 +1,7 @@
 package gb.myhomework.mypreference.viewmodel
 
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Observer
 import gb.myhomework.mypreference.Constants
 import gb.myhomework.mypreference.model.Game
@@ -14,9 +15,9 @@ class HistoryViewModel(val repository: Repository) :
 
     private val repositoryGames = repository.getGames()
 
-    private val gamesObserver = object : Observer<HistoryGameResult> {
-        override fun onChanged(t: HistoryGameResult?) {
-            if (t == null) return
+    private val gamesObserver =
+        Observer<HistoryGameResult> { t ->
+            if (t == null) return@Observer
 
             when (t) {
                 is HistoryGameResult.Success<*> -> {
@@ -27,7 +28,6 @@ class HistoryViewModel(val repository: Repository) :
                 }
             }
         }
-    }
 
     init {
         viewStateLiveData.value = HistoryViewState()
@@ -37,7 +37,8 @@ class HistoryViewModel(val repository: Repository) :
         }
     }
 
-    override fun onCleared() {
+    @VisibleForTesting (otherwise = VisibleForTesting.PROTECTED)
+    public override fun onCleared() {
         repositoryGames.removeObserver(gamesObserver)
     }
 

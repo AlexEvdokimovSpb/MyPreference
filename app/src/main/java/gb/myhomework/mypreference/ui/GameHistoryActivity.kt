@@ -40,7 +40,7 @@ class GameHistoryActivity : BaseActivity<GameHistoryViewState.Data, GameHistoryV
     override val viewModel: GameHistoryViewModel by viewModel()
 
     private var game: Game? = null
-    private var color: Game.Color = Game.Color.GREEN
+    private var color: Color = Color.GREEN
 
     override val ui: ActivityGameHistoryBinding by lazy {
         ActivityGameHistoryBinding.inflate(layoutInflater)
