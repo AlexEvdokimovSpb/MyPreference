@@ -10,4 +10,5 @@ interface RemoteDataProvider {
     fun getGameById(id: String): LiveData<HistoryGameResult>
     fun saveGame(game: Game): LiveData<HistoryGameResult>
     fun getCurrentUser(): LiveData<User?>
+    fun deleteGame(gameId: String): LiveData<HistoryGameResult>
 }

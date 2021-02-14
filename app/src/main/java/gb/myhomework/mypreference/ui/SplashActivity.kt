@@ -1,9 +1,9 @@
 package gb.myhomework.mypreference.ui
 
 import android.os.*
-import androidx.lifecycle.ViewModelProvider
 import gb.myhomework.mypreference.databinding.ActivitySplashBinding
 import gb.myhomework.mypreference.viewmodel.SplashViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 
 private const val START_DELAY = 1000L
 
@@ -11,9 +11,7 @@ class SplashActivity() : BaseActivity<Boolean?, SplashViewState>() {
 
     val TAG = "HW " + SplashActivity::class.java.simpleName
 
-    override val viewModel: SplashViewModel by lazy {
-        ViewModelProvider(this).get(SplashViewModel::class.java)
-    }
+    override val viewModel: SplashViewModel by viewModel()
 
     override val ui: ActivitySplashBinding by lazy {
         ActivitySplashBinding.inflate(layoutInflater)

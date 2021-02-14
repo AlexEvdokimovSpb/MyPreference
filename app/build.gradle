@@ -1,8 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
     id 'com.google.gms.google-services'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -36,9 +36,6 @@ android {
     buildFeatures {
         viewBinding true
     }
-    androidExtensions {
-        experimental = true
-    }
 }
 
 dependencies {
@@ -56,4 +53,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'com.firebaseui:firebase-ui-auth:7.1.1'
     implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'org.koin:koin-android:2.2.0'
+    implementation 'org.koin:koin-android-viewmodel:2.2.0'
 }

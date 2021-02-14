@@ -63,16 +63,7 @@ class HistoryAdapter(private val onItemClickListener: OnItemClickListener) : Rec
             ui.textPointsPlayerThree.text = game.pointsThree
             ui.textPointsPlayerFour.text = game.pointsFour
 
-            val color = when (game.color) {
-                Game.Color.WHITE -> R.color.color_white
-                Game.Color.VIOLET -> R.color.color_violet
-                Game.Color.YELLOW -> R.color.color_yello
-                Game.Color.RED -> R.color.color_red
-                Game.Color.PINK -> R.color.color_pink
-                Game.Color.GREEN -> R.color.color_green
-                Game.Color.BLUE -> R.color.color_blue
-            }
-            itemView.setBackgroundResource(color)
+            ui.textDescription.setBackgroundColor(game.color.getColorInt(itemView.context))
             itemView.setOnClickListener { onItemClickListener.onItemClick(game) }
 
             if (Constants.DEBUG) {
