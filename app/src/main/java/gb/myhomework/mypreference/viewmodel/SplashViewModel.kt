@@ -2,18 +2,16 @@ package gb.myhomework.mypreference.viewmodel
 
 import gb.myhomework.mypreference.model.NoAuthException
 import gb.myhomework.mypreference.model.Repository
-import gb.myhomework.mypreference.ui.SplashViewState
+import kotlinx.coroutines.launch
 
 class SplashViewModel(private val repository: Repository) :
-    BaseViewModel<Boolean?, SplashViewState>() {
+    BaseViewModel<Boolean>() {
 
     fun requestUser() {
-        repository.getCurrentUser().observeForever {
-            viewStateLiveData.value = if (it != null) {
-                SplashViewState(isAuth = true)
-            } else {
-                SplashViewState(error = NoAuthException())
-            }
+        launch {
+            repository.getCurrentUser()?.let {
+                setData(true)
+            } ?: setError(NoAuthException())
         }
     }
 }

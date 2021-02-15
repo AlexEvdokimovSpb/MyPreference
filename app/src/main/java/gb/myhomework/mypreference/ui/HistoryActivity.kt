@@ -10,7 +10,7 @@ import gb.myhomework.mypreference.model.Game
 import gb.myhomework.mypreference.viewmodel.HistoryViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class HistoryActivity : BaseActivity<List<Game>?, HistoryViewState>() {
+class HistoryActivity : BaseActivity<List<Game>?>() {
 
     val TAG = "HW " + HistoryActivity::class.java.simpleName
 
