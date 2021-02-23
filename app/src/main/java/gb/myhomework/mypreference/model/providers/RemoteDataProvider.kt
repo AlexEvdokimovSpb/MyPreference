@@ -1,14 +1,14 @@
 package gb.myhomework.mypreference.model.providers
 
-import androidx.lifecycle.LiveData
 import gb.myhomework.mypreference.model.Game
 import gb.myhomework.mypreference.model.HistoryGameResult
 import gb.myhomework.mypreference.model.User
+import kotlinx.coroutines.channels.ReceiveChannel
 
 interface RemoteDataProvider {
-    fun subscribeToAllGames(): LiveData<HistoryGameResult>
-    fun getGameById(id: String): LiveData<HistoryGameResult>
-    fun saveGame(game: Game): LiveData<HistoryGameResult>
-    fun getCurrentUser(): LiveData<User?>
-    fun deleteGame(gameId: String): LiveData<HistoryGameResult>
+    suspend fun subscribeToAllGames(): ReceiveChannel<HistoryGameResult>
+    suspend fun getGameById(id: String): Game
+    suspend fun saveGame(game: Game): Game
+    suspend fun getCurrentUser(): User?
+    suspend fun deleteGame(gameId: String): Game?
 }
