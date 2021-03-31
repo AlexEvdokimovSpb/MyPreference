@@ -2,26 +2,26 @@ package gb.myhomework.mypreference.ui
 
 import android.os.Bundle
 import android.util.Log
-import androidx.lifecycle.ViewModelProvider
+import android.view.MenuItem
 import androidx.recyclerview.widget.LinearLayoutManager
 import gb.myhomework.mypreference.Constants
 import gb.myhomework.mypreference.databinding.ActivityHistoryBinding
 import gb.myhomework.mypreference.model.Game
 import gb.myhomework.mypreference.viewmodel.HistoryViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 
-class HistoryActivity : BaseActivity<List<Game>?, HistoryViewState>() {
+class HistoryActivity : BaseActivity<List<Game>?>() {
 
     val TAG = "HW " + HistoryActivity::class.java.simpleName
 
-    override val viewModel: HistoryViewModel by lazy { ViewModelProvider(this).
-    get(HistoryViewModel::class.java) }
+    override val viewModel: HistoryViewModel by viewModel()
     private lateinit var adapter: HistoryAdapter
-    override lateinit var ui: ActivityHistoryBinding
+    override val ui: ActivityHistoryBinding by lazy {
+        ActivityHistoryBinding.inflate(layoutInflater)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ui = ActivityHistoryBinding.inflate(layoutInflater)
-        setContentView(ui.root)
 
         setSupportActionBar(ui.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -50,5 +50,13 @@ class HistoryActivity : BaseActivity<List<Game>?, HistoryViewState>() {
     private fun openGameScreen(game: Game?) {
         val intent = GameHistoryActivity.getStartIntent(this, game?.id)
         startActivity(intent)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        android.R.id.home -> {
+            onBackPressed()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 }

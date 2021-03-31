@@ -1,13 +1,42 @@
 package gb.myhomework.mypreference.viewmodel
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import gb.myhomework.mypreference.ui.BaseViewState
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlin.coroutines.CoroutineContext
 
-open class BaseViewModel<T, VS : BaseViewState<T>> : ViewModel() {
+open class BaseViewModel<S> :  ViewModel(), CoroutineScope {
 
-    open val viewStateLiveData = MutableLiveData<VS>()
+    override val coroutineContext: CoroutineContext by lazy {
+        Dispatchers.Default + Job()
+    }
 
-    open fun getViewState(): LiveData<VS> = viewStateLiveData
+    private val viewStateChannel = BroadcastChannel<S>(Channel.CONFLATED)
+    private val errorChannel = Channel<Throwable>()
+
+    open fun getViewState(): ReceiveChannel<S> = viewStateChannel.openSubscription()
+    open val viewStateLiveData = MutableLiveData<S>()
+    fun getErrorChannel(): ReceiveChannel<Throwable> = errorChannel
+
+    protected fun setError(e: Throwable) {
+        launch {
+            errorChannel.send(e)
+        }
+    }
+
+    protected fun setData(data: S) {
+        launch {
+            viewStateChannel.send(data)
+        }
+    }
+
+    override fun onCleared() {
+        viewStateChannel.close()
+        errorChannel.close()
+        coroutineContext.cancel()
+        super.onCleared()
+    }
 }
