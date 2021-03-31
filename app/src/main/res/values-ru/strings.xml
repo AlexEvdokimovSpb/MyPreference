@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Преферанс</string>
     <string name="click_me">Нажми меня</string>
-    <string name="menu_history" translatable="false">История игр</string>
+    <string name="menu_history">История игр</string>
 
     // наполнение item_history
     <string name="description">Описание</string>
@@ -16,5 +16,20 @@
     <string name="points_four">Очки четвертого</string>
     <string name="text_home">Начало</string>
     <string name="new_game">Новая игра</string>
+    <string name="snackbar_action">Ошибка</string>
+
+    <string name="logout_dialog_title">Выйти из аккаунта?</string>
+    <string name="logout_dialog_message">Все ваши заметки будут сохранены. Вы сможете получить к
+        ним доступ после авторизации.</string>
+    <string name="logout_dialog_cancel">Отмена</string>
+    <string name="logout_menu_title">Выход</string>
+    <string name="delete_menu_title">Удалить</string>
+    <string name="change_color_menu_title">Цвет</string>
+    <string name="delete_dialog_message">Удалить?</string>
+    <string name="cancel_btn_title">Отмена</string>
+
+    <string name="setting">Настройки</string>
+    <string name="history">История</string>
+    <string name="reserved">Зарезервировано</string>
 
 </resources>
