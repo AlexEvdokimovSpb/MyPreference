@@ -18,12 +18,14 @@ import gb.myhomework.mypreference.databinding.ActivityGameHistoryBinding
 import gb.myhomework.mypreference.model.Game
 import gb.myhomework.mypreference.model.Game.Color
 import gb.myhomework.mypreference.viewmodel.GameHistoryViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.util.*
 
 private const val SAVE_DELAY = 2000L
 
-class GameHistoryActivity : BaseActivity<GameHistoryViewState.Data, GameHistoryViewState>() {
+class GameHistoryActivity : BaseActivity<GameHistoryViewState.Data>() {
 
     val TAG = "HW " + GameHistoryActivity::class.java.simpleName
 
@@ -40,7 +42,7 @@ class GameHistoryActivity : BaseActivity<GameHistoryViewState.Data, GameHistoryV
     override val viewModel: GameHistoryViewModel by viewModel()
 
     private var game: Game? = null
-    private var color: Game.Color = Game.Color.GREEN
+    private var color: Color = Color.GREEN
 
     override val ui: ActivityGameHistoryBinding by lazy {
         ActivityGameHistoryBinding.inflate(layoutInflater)
@@ -174,31 +176,25 @@ class GameHistoryActivity : BaseActivity<GameHistoryViewState.Data, GameHistoryV
     private fun triggerSaveGame() {
         if (ui.textDescription.text == null || ui.textDescription.text!!.length < 3) return
 
-        Handler(Looper.getMainLooper()).postDelayed(object : Runnable {
-            override fun run() {
-                game = game?.copy(
-                    description = ui.textDescription.getText().toString(),
-                    playerOne = ui.textPlayerOne.getText().toString(),
-                    playerTwo = ui.textPlayerTwo.getText().toString(),
-                    playerThree = ui.textPlayerThree.getText().toString(),
-                    playerFour = ui.textPlayerFour.getText().toString(),
-                    pointsOne = ui.textPointsPlayerOne.getText().toString(),
-                    pointsTwo = ui.textPointsPlayerTwo.getText().toString(),
-                    pointsThree = ui.textPointsPlayerThree.getText().toString(),
-                    pointsFour = ui.textPointsPlayerFour.getText().toString(),
-                    color = color,
-                    lastChanged = Date(),
+        launch {
+            delay(SAVE_DELAY)
 
-                    ) ?: createNewGame()
+            game = game?.copy(
+                description = ui.textDescription.getText().toString(),
+                playerOne = ui.textPlayerOne.getText().toString(),
+                playerTwo = ui.textPlayerTwo.getText().toString(),
+                playerThree = ui.textPlayerThree.getText().toString(),
+                playerFour = ui.textPlayerFour.getText().toString(),
+                pointsOne = ui.textPointsPlayerOne.getText().toString(),
+                pointsTwo = ui.textPointsPlayerTwo.getText().toString(),
+                pointsThree = ui.textPointsPlayerThree.getText().toString(),
+                pointsFour = ui.textPointsPlayerFour.getText().toString(),
+                color = color,
+                lastChanged = Date(),
+                ) ?: createNewGame()
 
-                if (game != null) {
-                    viewModel.saveChanges(game!!)
-                    if (Constants.DEBUG) {
-                        Log.v(TAG, "viewModel.saveChanges")
-                    }
-                }
-            }
-        }, SAVE_DELAY)
+            game?.let { viewModel.saveChanges(game!!) }
+        }
     }
 
     private fun setToolbarColor(color: Color) {
