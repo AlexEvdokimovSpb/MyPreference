@@ -1,44 +1,32 @@
 package gb.myhomework.mypreference.viewmodel
 
-import android.util.Log
-import androidx.lifecycle.Observer
-import gb.myhomework.mypreference.Constants
+import androidx.annotation.VisibleForTesting
 import gb.myhomework.mypreference.model.Game
 import gb.myhomework.mypreference.model.HistoryGameResult
 import gb.myhomework.mypreference.model.Repository
-import gb.myhomework.mypreference.ui.HistoryViewState
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class HistoryViewModel(val repository: Repository) :
-    BaseViewModel<List<Game>?, HistoryViewState>() {
-    val TAG = "HW " + HistoryViewModel::class.java.simpleName
+    BaseViewModel<List<Game>?>() {
 
-    private val repositoryGames = repository.getGames()
+    private val gamesChannel by lazy { runBlocking { repository.getGames() } }
 
-    private val gamesObserver = object : Observer<HistoryGameResult> {
-        override fun onChanged(t: HistoryGameResult?) {
-            if (t == null) return
-
-            when (t) {
-                is HistoryGameResult.Success<*> -> {
-                    viewStateLiveData.value = HistoryViewState(games = t.data as? List<Game>)
-                }
-                is HistoryGameResult.Error -> {
-                    viewStateLiveData.value = HistoryViewState(error = t.error)
+    init {
+        launch {
+            gamesChannel.consumeEach { result ->
+                when (result) {
+                    is HistoryGameResult.Success<*> -> setData(result.data as? List<Game>)
+                    is HistoryGameResult.Error -> setError(result.error)
                 }
             }
         }
     }
 
-    init {
-        viewStateLiveData.value = HistoryViewState()
-        repositoryGames.observeForever(gamesObserver)
-        if (Constants.DEBUG) {
-            Log.v(TAG, "HistoryViewModel init")
-        }
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public override fun onCleared() {
+        gamesChannel.cancel()
+        super.onCleared()
     }
-
-    override fun onCleared() {
-        repositoryGames.removeObserver(gamesObserver)
-    }
-
 }

@@ -10,27 +10,56 @@ import com.google.android.material.snackbar.Snackbar
 import gb.myhomework.mypreference.R
 import gb.myhomework.mypreference.model.NoAuthException
 import gb.myhomework.mypreference.viewmodel.BaseViewModel
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.consumeEach
+import kotlin.coroutines.CoroutineContext
 
 private const val RC_SIGN_IN = 888
 
-abstract class BaseActivity<T, VS : BaseViewState<T>> : AppCompatActivity() {
+abstract class BaseActivity<T> : AppCompatActivity(), CoroutineScope {
 
-    abstract val viewModel: BaseViewModel<T, VS>
+    override val coroutineContext: CoroutineContext by lazy {
+        Dispatchers.Main + Job()
+    }
+
+    private lateinit var dataJob: Job
+    private lateinit var errorJob: Job
+
+    abstract val viewModel: BaseViewModel<T>
     abstract val ui: ViewBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(ui.root)
+    }
 
-        viewModel.getViewState().observe(this) { t ->
-            t?.apply {
-                data?.let { data -> renderData(data) }
-                error?.let { error -> renderError(error) }
+    override fun onStart() {
+        super.onStart()
+        dataJob = launch {
+            viewModel.getViewState().consumeEach {
+                renderData(it)
+            }
+        }
+
+        errorJob = launch {
+            viewModel.getErrorChannel().consumeEach {
+                renderError(it)
             }
         }
     }
 
     abstract fun renderData(data: T)
+
+    override fun onStop() {
+        super.onStop()
+        dataJob.cancel()
+        errorJob.cancel()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        coroutineContext.cancel()
+    }
 
     protected open fun showError(error: String) {
         Snackbar.make(ui.root, error, Snackbar.LENGTH_INDEFINITE).apply {
