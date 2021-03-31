@@ -1,27 +1,32 @@
 package gb.myhomework.mypreference.viewmodel
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import gb.myhomework.mypreference.Constants
+import androidx.annotation.VisibleForTesting
+import gb.myhomework.mypreference.model.Game
+import gb.myhomework.mypreference.model.HistoryGameResult
 import gb.myhomework.mypreference.model.Repository
-import gb.myhomework.mypreference.ui.HistoryViewState
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
-class HistoryViewModel : ViewModel() {
-    val TAG = "HW " + HistoryViewModel::class.java.simpleName
-    private val viewStateLiveData: MutableLiveData<HistoryViewState> = MutableLiveData()
+class HistoryViewModel(val repository: Repository) :
+    BaseViewModel<List<Game>?>() {
+
+    private val gamesChannel by lazy { runBlocking { repository.getGames() } }
 
     init {
-        Repository.getGames().observeForever { games ->
-            viewStateLiveData.value =
-                viewStateLiveData.value?.copy(games = games) ?: HistoryViewState(games)
-        }
-
-        if (Constants.DEBUG) {
-            Log.v(TAG, "HistoryViewModel init")
+        launch {
+            gamesChannel.consumeEach { result ->
+                when (result) {
+                    is HistoryGameResult.Success<*> -> setData(result.data as? List<Game>)
+                    is HistoryGameResult.Error -> setError(result.error)
+                }
+            }
         }
     }
 
-    fun viewState(): LiveData<HistoryViewState> = viewStateLiveData
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public override fun onCleared() {
+        gamesChannel.cancel()
+        super.onCleared()
+    }
 }

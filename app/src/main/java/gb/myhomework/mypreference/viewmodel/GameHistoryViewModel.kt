@@ -1,20 +1,46 @@
 package gb.myhomework.mypreference.viewmodel
 
-import androidx.lifecycle.ViewModel
 import gb.myhomework.mypreference.model.Game
 import gb.myhomework.mypreference.model.Repository
+import gb.myhomework.mypreference.ui.GameHistoryViewState
+import kotlinx.coroutines.launch
 
-class GameHistoryViewModel(private val repository: Repository = Repository) : ViewModel() {
+class GameHistoryViewModel(val repository: Repository) :
+    BaseViewModel<GameHistoryViewState.Data>() {
 
-    private var pendingGame: Game? = null
+    private val currentGame: Game?
+        get() = getViewState().poll()?.game
 
     fun saveChanges(game: Game) {
-        pendingGame = game
+        setData(GameHistoryViewState.Data(game = game))
+    }
+
+    fun loadGame(gameId: String) {
+        launch {
+            try {
+                setData(GameHistoryViewState.Data(game = repository.getGameById(gameId)))
+            } catch (e: Throwable) {
+                setError(e)
+            }
+        }
+    }
+
+    fun deleteGame() {
+        launch {
+            try {
+                currentGame?.let { repository.deleteGame(it.id) }
+                setData(GameHistoryViewState.Data(isDeleted = true))
+            } catch (e: Throwable) {
+                setError(e)
+            }
+        }
     }
 
     override fun onCleared() {
-        if (pendingGame != null) {
-            repository.saveGame(pendingGame!!)
+        launch {
+            currentGame?.let { repository.saveGame(it) }
+            super.onCleared()
         }
     }
 }
+
