@@ -1,6 +1,6 @@
 package gb.myhomework.mypreference
 
 object Constants {
-    var VERBOSE = false
-    var DEBUG = VERBOSE && true
+    val VERBOSE = false
+    val DEBUG = VERBOSE && true
 }

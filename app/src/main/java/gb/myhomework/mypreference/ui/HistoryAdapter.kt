@@ -10,7 +10,11 @@ import gb.myhomework.mypreference.R
 import gb.myhomework.mypreference.databinding.ItemHistoryBinding
 import gb.myhomework.mypreference.model.Game
 
-class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.GameViewHolder>() {
+interface OnItemClickListener {
+    fun onItemClick(game: Game)
+}
+
+class HistoryAdapter(private val onItemClickListener: OnItemClickListener) : RecyclerView.Adapter<HistoryAdapter.GameViewHolder>() {
 
     val TAG = "HW " + HistoryAdapter::class.java.simpleName
     var games: List<Game> = listOf()
@@ -33,7 +37,7 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.GameViewHolder>() {
 
     override fun getItemCount(): Int {
         if (Constants.DEBUG) {
-            Log.v(TAG, "Колличество игр" + games.size)
+            Log.v(TAG, "Колличество игр " + games.size)
         }
         return games.size
     }
@@ -45,7 +49,7 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.GameViewHolder>() {
         }
     }
 
-    class GameViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class GameViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val TAG = "HW " + GameViewHolder::class.java.simpleName
         val ui: ItemHistoryBinding = ItemHistoryBinding.bind(itemView)
         fun bind(game: Game) {
@@ -54,10 +58,14 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.GameViewHolder>() {
             ui.textPlayerTwo.text = game.playerTwo
             ui.textPlayerThree.text = game.playerThree
             ui.textPlayerFour.text = game.playerFour
-            ui.textPointsPlayerOne.text = game.pointsOne.toString()
-            ui.textPointsPlayerTwo.text = game.pointsTwo.toString()
-            ui.textPointsPlayerThree.text = game.pointsThree.toString()
-            ui.textPointsPlayerFour.text = game.pointsFour.toString()
+            ui.textPointsPlayerOne.text = game.pointsOne
+            ui.textPointsPlayerTwo.text = game.pointsTwo
+            ui.textPointsPlayerThree.text = game.pointsThree
+            ui.textPointsPlayerFour.text = game.pointsFour
+
+            ui.textDescription.setBackgroundColor(game.color.getColorInt(itemView.context))
+            itemView.setOnClickListener { onItemClickListener.onItemClick(game) }
+
             if (Constants.DEBUG) {
                 Log.v(TAG, "GameViewHolder")
             }

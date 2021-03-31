@@ -1,43 +1,62 @@
 package gb.myhomework.mypreference.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import android.view.MenuItem
 import androidx.recyclerview.widget.LinearLayoutManager
 import gb.myhomework.mypreference.Constants
 import gb.myhomework.mypreference.databinding.ActivityHistoryBinding
+import gb.myhomework.mypreference.model.Game
 import gb.myhomework.mypreference.viewmodel.HistoryViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 
-class HistoryActivity : AppCompatActivity() {
+class HistoryActivity : BaseActivity<List<Game>?>() {
 
     val TAG = "HW " + HistoryActivity::class.java.simpleName
-    lateinit var ui: ActivityHistoryBinding
-    lateinit var historyViewModel: HistoryViewModel
-    lateinit var adapter: HistoryAdapter
-    //lateinit var layoutManager: LinearLayoutManager
+
+    override val viewModel: HistoryViewModel by viewModel()
+    private lateinit var adapter: HistoryAdapter
+    override val ui: ActivityHistoryBinding by lazy {
+        ActivityHistoryBinding.inflate(layoutInflater)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ui = ActivityHistoryBinding.inflate(layoutInflater)
-        setContentView(ui.root)
 
-        historyViewModel = ViewModelProvider(this).get(HistoryViewModel::class.java)
-        adapter = HistoryAdapter()
+        setSupportActionBar(ui.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        adapter = HistoryAdapter(object : OnItemClickListener {
+            override fun onItemClick(game: Game) {
+                openGameScreen(game)
+            }
+        })
+
         ui.historyRecyclerView.adapter = adapter
-//        layoutManager = LinearLayoutManager(this)
-//        if (Constants.DEBUG) {
-//            Log.v(TAG, "layoutManager =" + layoutManager)
-//        }
+        ui.historyRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        historyViewModel.viewState().observe(this, Observer<HistoryViewState> { state ->
-            state?.let { adapter.games = it.games }
-        }
-        )
+        ui.fab.setOnClickListener { openGameScreen(null) }
 
         if (Constants.DEBUG) {
             Log.v(TAG, "HistoryActivity onCreate")
         }
+    }
+
+    override fun renderData(data: List<Game>?) {
+        if (data == null) return
+        adapter.games = data
+    }
+
+    private fun openGameScreen(game: Game?) {
+        val intent = GameHistoryActivity.getStartIntent(this, game?.id)
+        startActivity(intent)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        android.R.id.home -> {
+            onBackPressed()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 }

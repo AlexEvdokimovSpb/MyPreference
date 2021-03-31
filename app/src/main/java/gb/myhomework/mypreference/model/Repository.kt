@@ -1,46 +1,12 @@
 package gb.myhomework.mypreference.model
 
-object Repository {
-    private val games: List<Game>
+import gb.myhomework.mypreference.model.providers.RemoteDataProvider
 
-    init {
-        games = listOf(
-                Game(
-                        "Первая игра: победа Коли",
-                        "Николай",
-                        "Константин",
-                        "Екатерина",
-                        "Надежда",
-                        300,
-                        100,
-                        -300,
-                        -100
-                ),
-                Game(
-                        "Вторая игра: Катя всех сделала",
-                        "Николай",
-                        "Константин",
-                        "Екатерина",
-                        "Надежда",
-                        -300,
-                        -300,
-                        1000,
-                        -400
-                ),
-                Game(
-                        "Третья игра: Костя, как же так? Мизер с такими не играют!",
-                        "Николай",
-                        "Константин",
-                        "Екатерина",
-                        "Надежда",
-                        300,
-                        -1000,
-                        300,
-                        400
-                )
-        )
-    }
+class Repository (private val remoteDataProvider: RemoteDataProvider){
 
-    fun getGames(): List<Game> = games
-
+    suspend fun getGames() = remoteDataProvider.subscribeToAllGames()
+    suspend fun saveGame(game: Game) = remoteDataProvider.saveGame(game)
+    suspend fun getGameById(id: String) = remoteDataProvider.getGameById(id)
+    suspend fun getCurrentUser() = remoteDataProvider.getCurrentUser()
+    suspend fun deleteGame(gameId: String) = remoteDataProvider.deleteGame(gameId)
 }
